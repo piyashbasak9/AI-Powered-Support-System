@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Resolved Questions - Staff{% endblock %}
+
+{% block content %}
+<style>
+    .nav-tabs {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #007bff;
+    }
+    .nav-link {
+        color: #666;
+        border: none;
+        padding: 12px 20px;
+        margin-right: 5px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    .nav-link:hover {
+        color: #007bff;
+        border-bottom: 3px solid #007bff;
+    }
+    .nav-link.active {
+        color: #007bff;
+        border-bottom: 3px solid #007bff;
+    }
+    .ticket-card {
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-left: 4px solid #28a745;
+    }
+    .ticket-card h3 {
+        margin-top: 0;
+        color: #28a745;
+    }
+    .ticket-field {
+        margin: 15px 0;
+    }
+    .ticket-field label {
+        font-weight: bold;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .ticket-field p {
+        color: #666;
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 0;
+    }
+    .badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .badge-success {
+        background: #d4edda;
+        color: #155724;
+    }
+</style>
+
+<div class="header">
+    <h1>✅ Resolved Questions</h1>
+</div>
+
+<!-- Navigation Tabs -->
+<div class="nav-tabs">
+    <a href="{% url 'staff_dashboard' %}" class="nav-link">📤 Upload Files</a>
+    <a href="{% url 'staff_pending' %}" class="nav-link">❓ Pending Questions</a>
+    <a href="#" class="nav-link active">✅ Resolved Questions</a>
+</div>
+
+<!-- Resolved Count -->
+<div style="background: #d4edda; border: 1px solid #28a745; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+    <strong>✅ {{ resolved_count }} question(s) resolved</strong>
+</div>
+
+<!-- Resolved Tickets -->
+{% if tickets %}
+    {% for ticket in tickets %}
+    <div class="ticket-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">Ticket #{{ ticket.ticket_id|truncatechars:20 }}</h3>
+            <span class="badge badge-success">Resolved</span>
+        </div>
+        
+        <div class="ticket-field">
+            <label>Question:</label>
+            <p>{{ ticket.query }}</p>
+        </div>
+        
+        {% if ticket.extracted_text %}
+        <div class="ticket-field">
+            <label>Context/File Information:</label>
+            <p>{{ ticket.extracted_text|truncatewords:100 }}...</p>
+        </div>
+        {% endif %}
+        
+        <div class="ticket-field">
+            <label>Answer Provided:</label>
+            <p>{{ ticket.answer }}</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+            <div class="ticket-field">
+                <label>Asked on:</label>
+                <p>{{ ticket.created_at|date:"M d, Y H:i" }}</p>
+            </div>
+            <div class="ticket-field">
+                <label>Resolved by {{ ticket.resolved_by }}:</label>
+                <p>{{ ticket.resolved_at|date:"M d, Y H:i" }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<div class="card">
+    <p style="text-align: center; color: #999; padding: 40px;">
+        No resolved questions yet.
+    </p>
+</div>
+{% endif %}
+
+{% endblock %}

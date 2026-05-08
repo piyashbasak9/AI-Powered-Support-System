@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Questions - Staff{% endblock %}
+
+{% block content %}
+<style>
+    .nav-tabs {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #007bff;
+    }
+    .nav-link {
+        color: #666;
+        border: none;
+        padding: 12px 20px;
+        margin-right: 5px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    .nav-link:hover {
+        color: #007bff;
+        border-bottom: 3px solid #007bff;
+    }
+    .nav-link.active {
+        color: #007bff;
+        border-bottom: 3px solid #007bff;
+    }
+    .ticket-card {
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .ticket-card h3 {
+        margin-top: 0;
+        color: #007bff;
+    }
+    .ticket-field {
+        margin: 15px 0;
+    }
+    .ticket-field label {
+        font-weight: bold;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .ticket-field p {
+        color: #666;
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 0;
+    }
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: Arial, sans-serif;
+        resize: vertical;
+    }
+    button[type="submit"] {
+        background: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    button[type="submit"]:hover {
+        background: #218838;
+    }
+</style>
+
+<div class="header">
+    <h1>❓ Pending Questions</h1>
+</div>
+
+<!-- Navigation Tabs -->
+<div class="nav-tabs">
+    <a href="{% url 'staff_dashboard' %}" class="nav-link">📤 Upload Files</a>
+    <a href="#" class="nav-link active">❓ Pending Questions</a>
+    <a href="{% url 'staff_resolved' %}" class="nav-link">✅ Resolved Questions</a>
+</div>
+
+<!-- Pending Count -->
+<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+    <strong>⏳ {{ pending_count }} pending question(s) awaiting response</strong>
+</div>
+
+<!-- Pending Tickets -->
+{% if tickets %}
+    {% for ticket in tickets %}
+    <div class="ticket-card">
+        <h3>Ticket #{{ ticket.ticket_id|truncatechars:20 }}</h3>
+        
+        <div class="ticket-field">
+            <label>Question:</label>
+            <p>{{ ticket.query }}</p>
+        </div>
+        
+        {% if ticket.extracted_text %}
+        <div class="ticket-field">
+            <label>Context/File Information:</label>
+            <p>{{ ticket.extracted_text|truncatewords:100 }}...</p>
+        </div>
+        {% endif %}
+        
+        <div class="ticket-field">
+            <label>Asked on:</label>
+            <p>{{ ticket.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+        
+        <form method="post" action="{% url 'resolve_ticket' ticket.ticket_id %}">
+            {% csrf_token %}
+            <div class="ticket-field">
+                <label>Your Answer:</label>
+                <textarea name="answer" rows="4" required placeholder="Type your response here..."></textarea>
+            </div>
+            <button type="submit">✅ Mark as Resolved</button>
+        </form>
+    </div>
+    {% endfor %}
+{% else %}
+<div class="card">
+    <p style="text-align: center; color: #999; padding: 40px;">
+        ✨ Great! No pending questions right now.
+    </p>
+</div>
+{% endif %}
+
+{% endblock %}

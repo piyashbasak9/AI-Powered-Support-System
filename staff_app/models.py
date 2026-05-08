@@ -20,3 +20,22 @@ class Ticket(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
+
+class UploadedFile(models.Model):
+    STATUS_CHOICES = [
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    filename = models.CharField(max_length=255)
+    uploaded_file = models.FileField(upload_to='uploads/')
+    uploaded_by = models.CharField(max_length=100)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='success')
+    chunks = models.IntegerField(default=0)
+    message = models.TextField(blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-uploaded_at']
