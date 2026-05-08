@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Ask Question - RAG Support{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>RAG Support System</h1>
+    <p>Ask questions and get instant answers</p>
+</div>
+
+<div class="card">
+    <form id="questionForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: bold;">Your Question:</label>
+            <textarea name="query" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" required></textarea>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: bold;">Attach File (Optional):</label>
+            <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png">
+        </div>
+        
+        <button type="submit">Ask Question</button>
+    </form>
+    
+    <div id="response" style="margin-top: 30px; display: none;"></div>
+</div>
+
+<script>
+document.getElementById('questionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const responseDiv = document.getElementById('response');
+    
+    responseDiv.style.display = 'block';
+    responseDiv.innerHTML = '<div class="success">Processing...</div>';
+    
+    try {
+        const response = await fetch('/api/ask/', {
+            method: 'POST',
+            body: formData,
+            headers: {'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value}
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            responseDiv.innerHTML = `<div class="success"><strong>Answer:</strong><br>${data.answer}</div>`;
+        } else if (data.status === 'ticket_created') {
+            responseDiv.innerHTML = `<div class="success"><strong>Ticket Created:</strong><br>${data.message}<br>Ticket ID: ${data.ticket_id}</div>`;
+        } else {
+            responseDiv.innerHTML = `<div class="error">Error: ${data.message || 'Something went wrong'}</div>`;
+        }
+    } catch (error) {
+        responseDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+    }
+});
+</script>
+{% endblock %}
