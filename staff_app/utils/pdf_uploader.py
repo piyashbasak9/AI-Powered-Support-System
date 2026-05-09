@@ -25,15 +25,11 @@ def chunk_text(text):
     return text_splitter.split_text(text)
 
 def get_embedding(text):
-    import google.generativeai as genai
+    from sentence_transformers import SentenceTransformer
     from shared.constants import EMBEDDING_MODEL
-    genai.configure(api_key=settings.GEMINI_API_KEY)
-    result = genai.embed_content(
-        model=EMBEDDING_MODEL,
-        content=text,
-        task_type="RETRIEVAL_DOCUMENT"
-    )
-    return result["embedding"]
+    
+    model = SentenceTransformer(EMBEDDING_MODEL)
+    return model.encode(text).tolist()
 
 def process_pdf_and_upload(file_bytes, filename):
     # Extract text

@@ -76,8 +76,8 @@ LOGIN_REDIRECT_URL = '/staff/dashboard/'
 # API Keys
 PINECONE_API_KEY = os.getenv('PINECONE_API_KEY', '')
 PINECONE_ENVIRONMENT = os.getenv('PINECONE_ENVIRONMENT', 'gcp-starter')
-PINECONE_INDEX_NAME = os.getenv('PINECONE_INDEX_NAME', 'rag-support-index-v2')
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+PINECONE_INDEX_NAME = os.getenv('PINECONE_INDEX_NAME', 'rag-support-index-v3')
+GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
 STAFF_SERVER_URL = os.getenv('STAFF_SERVER_URL', 'http://localhost:8000/staff/api/create-ticket/')
 
 MAX_FILE_SIZE_MB = 10
